@@ -5,11 +5,10 @@ import { IEstate, IEstateReturn } from '../../interfaces/estate.interface'
 import { returnEstateSchema, returnEstateSchemaAdress } from '../../schemas/realEstate.schema'
 import { AppError } from '../../errors'
 
-const createEstateService = async (dataEstate: IEstate) : Promise<IEstateReturn | undefined>  => {
+const createEstateService = async (dataEstate: IEstate): Promise<IEstateReturn | undefined> => {
     const addressRepository: Repository<Address> = AppDataSource.getRepository(Address)
     const estateRepository: Repository<RealEstate> = AppDataSource.getRepository(RealEstate)
     const categoryRepository: Repository<Category> = AppDataSource.getRepository(Category)
-    console.log(dataEstate.address)
     const findAddress = await addressRepository.findOne({
         where: {
             street: dataEstate.address.street,
@@ -18,7 +17,7 @@ const createEstateService = async (dataEstate: IEstate) : Promise<IEstateReturn 
             state: dataEstate.address.state
         }
     })
-    if(findAddress){
+    if (findAddress) {
         throw new AppError('Address already exists', 409)
     }
     const findCategory = await categoryRepository.findOne({
@@ -26,7 +25,7 @@ const createEstateService = async (dataEstate: IEstate) : Promise<IEstateReturn 
             id: dataEstate.categoryId!
         }
     })
-   
+
     if (findCategory) {
         const newAddress = addressRepository.create(dataEstate.address)
         await addressRepository.save(newAddress)

@@ -3,7 +3,7 @@ import { AppDataSource } from "../../data-source";
 import { Category } from "../../entities";
 import { AppError } from "../../errors";
 
-const listEstateCategoryService = async (categoryId: number) => {
+const listEstateCategoryService = async (categoryId: number)/* : Promise<IEstateByCategory> */ => {
 
   const categoryRepository: Repository<Category> = AppDataSource.getRepository(Category)
   const findCategory = await categoryRepository.findOne({

@@ -4,19 +4,19 @@ import { AppDataSource } from '../data-source'
 import { User } from '../entities/users.entity'
 import { AppError } from '../errors'
 
-const emailExistsMiddleware = async(req: Request, res: Response, next: NextFunction):Promise<void> => {
+const emailExistsMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-    const userRepository:Repository<User> = AppDataSource.getRepository(User)
-   
+    const userRepository: Repository<User> = AppDataSource.getRepository(User)
+
     const findUser = await userRepository.findOne({
-        where:{
+        where: {
             email: req.body.email
         }
     })
-    if(!Object.keys(req.body).includes("email")){
+    if (!Object.keys(req.body).includes("email")) {
         return next()
     }
-    if(findUser){
+    if (findUser) {
         throw new AppError('Email already exists', 409)
     }
 

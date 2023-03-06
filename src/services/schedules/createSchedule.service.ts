@@ -7,8 +7,8 @@ import { AppError } from '../../errors'
 
 
 const createScheduleService = async (data:ISchedule, idToken:number): Promise<IScheduleReturn>  => {
-
     const userRepository: Repository<User> = AppDataSource.getRepository(User)
+    const scheduleRepository: Repository<Schedule> = AppDataSource.getRepository(Schedule)
     const findUser = await userRepository.findOne({
         where: {
             id: idToken
@@ -23,7 +23,7 @@ const createScheduleService = async (data:ISchedule, idToken:number): Promise<IS
     if(!findEstate){
         throw new AppError('RealEstate not found', 404)
     }
-    const scheduleRepository: Repository<Schedule> = AppDataSource.getRepository(Schedule)
+   /*   */
     const objectSchedule = {
         date: data.date,
         hour: data.hour,
@@ -39,11 +39,28 @@ const createScheduleService = async (data:ISchedule, idToken:number): Promise<IS
     if(checkDataIsSaturday == 6){
         throw new AppError('Invalid date, work days are monday to friday', 400)
     }
+    const findScheduleDate = await scheduleRepository.createQueryBuilder("s")
+    .where("s.date = :date", {date:data.date})
+    .andWhere("s.hour = :hour", {hour:data.hour})
+    .andWhere("s.realEstate.id = :id", {id: data.realEstateId})
+    .getOne()
+    console.log(1,findScheduleDate)
+    if(findScheduleDate){
+        throw new AppError('Schedule to this real estate at this date and time already exists', 409)
+    } 
+    const findScheduleQuery = await scheduleRepository.createQueryBuilder("s")
+    .where("s.date = :date", {date:data.date})
+    .andWhere("s.hour = :hour", {hour:data.hour})
+    .andWhere("s.user.id = :id", {id: idToken})
+    .getOne()
+ 
+    console.log(2,findScheduleQuery)
+    if(findScheduleQuery){
+        throw new AppError('User schedule to this real estate at this date and time already exists', 409)
+    } 
 
-
-
-    
-    const findSchedule = await scheduleRepository.findOne({
+ 
+   /*  const findSchedule = await scheduleRepository.findOne({
         where:{
             date: data.date,
             hour: data.hour
@@ -51,9 +68,8 @@ const createScheduleService = async (data:ISchedule, idToken:number): Promise<IS
     })
     if(findSchedule){
         throw new AppError('Schedule to this real estate at this date and time already exists', 409)
-    }
-
-
+    } */
+ 
 
     const schedule: Schedule = scheduleRepository.create(objectSchedule)
     await scheduleRepository.save(schedule)

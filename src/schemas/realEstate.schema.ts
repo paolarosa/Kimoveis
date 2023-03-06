@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { createAddressSchema } from './address.schema'
+import { addressSchema, createAddressSchema } from './address.schema'
 import { returnCategorySchema } from './category.schema'
 
 const estateSchema = z.object({
@@ -20,6 +20,20 @@ const returnEstateSchema = estateSchema.extend({
     })
 }).omit({categoryId: true})
 
+const returnEstateSchemaAdress = z.object({
+    id: z.number(),
+    value: z.string().or(z.number()),
+    size: z.number().int().gt(0),
+    address: addressSchema,
+    category:z.object({
+        name: z.string(),
+        id: z.number()
+    }),
+    sold: z.boolean().default(false),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+})
+
 const returnEstateSchedule = returnEstateSchema.omit({ address: true })
 
 const returnAllEstatesSchema = returnEstateSchema.array()
@@ -36,5 +50,6 @@ export {
     returnAllEstatesSchema,
     estateUpdateSchema,
     returnEstateByCategorySchema,
-    returnEstateSchedule
+    returnEstateSchedule,
+    returnEstateSchemaAdress
 }

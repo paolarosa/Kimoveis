@@ -12,7 +12,6 @@ const createScheduleController = async(req:Request, res:Response): Promise<Respo
     const idToken = req.user.id
     const schedule = await createScheduleService(req.body, idToken)
     return res.status(201).json({ message:`Schedule created`})
-    /* return res.json(schedule) */
 
 }
 
